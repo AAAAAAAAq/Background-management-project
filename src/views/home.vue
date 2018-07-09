@@ -102,6 +102,13 @@ export default {
       this.$router.push({ name: 'login' })
       this.message.warning('请先登录')
     }
+  },
+  methods: {
+    handleLogout () {
+      sessionStorage.clear()
+      this.$router.push({ name: 'login'})
+      this.$message.success('退出成功')
+    }
   }
 }
 </script>
