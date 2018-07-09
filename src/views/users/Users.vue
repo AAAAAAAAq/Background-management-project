@@ -36,13 +36,17 @@
       </el-table-column>
       <el-table-column
         prop="mobile"
-        label="电话"
-      >
+        label="电话">
       </el-table-column>
       <el-table-column
-        prop="mg_state"
-        label="用户状态"
-      >
+        label="用户状态">
+      <template slot-scope="scope">
+        <el-switch
+          v-model="scope.row.mg_state"
+          active-color="#13ce66"
+          inactive-color="#ff4949">
+        </el-switch>
+      </template>
       </el-table-column>
       <el-table-column
         prop=""
