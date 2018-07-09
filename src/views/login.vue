@@ -24,19 +24,18 @@ export default {
     }
   },
   methods: {
-    handleLogin () {
-      this.$http.post('/login', this.formData)
-        .then((res) => {
-          const data = res.data
-          const {meta: { status, msg }} = data
-          if (status === 200) {
-            const token = data.data.token
-            sessionStorage.setItem('token', token)
-            this.$message.success(msg)
-          } else {
-            this.$message.error(msg)
-          }
-        })
+    async handleLogin () {
+      const res = await this.$http.post('login', this.formData)
+      // 相当于写在构造函数中
+      const data = res.data
+      const {meta: { status, msg }} = data
+      if (status === 200) {
+        this.$message.success(msg)
+        const {data: {token}} = data
+        sessionStorage.setItem('token', token)
+      } else {
+        this.message.error(msg)
+      }
     }
   }
 }
