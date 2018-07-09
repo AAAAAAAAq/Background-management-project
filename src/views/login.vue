@@ -5,8 +5,8 @@
   <el-form-item label="用户名">
     <el-input v-model="formData.username"></el-input>
   </el-form-item>
-  <el-form-item label="活动区域">
-    <el-input v-model="formData.password"></el-input>
+  <el-form-item label="密码">
+    <el-input v-model="formData.password" type="password"></el-input>
   </el-form-item>
  <el-button type="primary" class="login-btn" @click="handleLogin">登录</el-button>
 </el-form>
@@ -33,6 +33,7 @@ export default {
         this.$message.success(msg)
         const {data: {token}} = data
         sessionStorage.setItem('token', token)
+        this.$router.push({name: 'home'})
       } else {
         this.message.error(msg)
       }
