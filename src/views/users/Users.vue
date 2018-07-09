@@ -17,6 +17,7 @@
     </el-row>
     <!-- 表格 -->
      <el-table
+      v-loading = "loading"
       stripe
       border
       :data="list"
@@ -71,7 +72,8 @@
 export default {
   data () {
     return {
-      list:[]
+      list: [],
+      loading: true
     }
   },
   created () {
@@ -79,17 +81,21 @@ export default {
   },
   methods: {
     async loadData () {
+      // 发送异步请求之前
+      this.loadding = true
       // 发送请求前获取token
       const token = sessionStorage.getItem('token')
       // 在请求头中设置token
       this.$http.defaults.headers.common['Authorization'] = token
       const res = await this.$http.get('users?pagenum=1&pagesize=10')
+      // 异步请求结束
+      this.loading = false
       const data = res.data
       const {meta: { msg, status }} = data
-      if(status ===200){
-        const {data:{users}} = data 
+      if (status === 200) {
+        const {data: {users}} = data
         this.list = users
-      }else{
+      } else {
         this.$message.error(msg)
       }
     }

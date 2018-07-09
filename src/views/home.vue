@@ -106,7 +106,7 @@ export default {
   methods: {
     handleLogout () {
       sessionStorage.clear()
-      this.$router.push({ name: 'login'})
+      this.$router.push({name: 'login'})
       this.$message.success('退出成功')
     }
   }
