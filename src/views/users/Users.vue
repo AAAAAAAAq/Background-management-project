@@ -27,21 +27,31 @@
     </el-table-column>
       <el-table-column
         prop="username"
-        label="姓名"
-        width="180">
+        label="姓名">
       </el-table-column>
       <el-table-column
         prop="email"
         label="邮箱"
-        width="180">
+      >
       </el-table-column>
       <el-table-column
         prop="mobile"
-        label="电话">
+        label="电话"
+      >
       </el-table-column>
       <el-table-column
         prop="mg_state"
-        label="用户状态">
+        label="用户状态"
+      >
+      </el-table-column>
+      <el-table-column
+        prop=""
+        label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" size="mini" plain></el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" plain></el-button>
+          <el-button type="success" icon="el-icon-check" size="mini" plain></el-button>
+        </template>
       </el-table-column>
     </el-table>
   </el-card>
