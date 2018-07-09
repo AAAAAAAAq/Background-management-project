@@ -100,7 +100,7 @@ export default {
     const token = sessionStorage.getItem('token')
     if (!token) {
       this.$router.push({ name: 'login' })
-      this.message.warning('请先登录')
+      this.$message.warning('请先登录')
     }
   },
   methods: {
