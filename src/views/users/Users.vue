@@ -9,8 +9,8 @@
     <!-- 搜索区域 -->
     <el-row class="seachArea">
       <el-col :span="24">
-        <el-input clearable placeholder="请输入内容" class="searchInput">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-input v-model="searchVal" clearable placeholder="请输入内容" class="searchInput">
+          <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
         </el-input>
         <el-button type="success" plain>添加用户</el-button>
       </el-col>
@@ -87,19 +87,24 @@ export default {
       loading: true,
       pagenum: 1,
       pagesize: 2,
-      total: 0
+      total: 0,
+      searchVal: ''
     }
   },
   created () {
     this.loadData()
   },
   methods: {
+    // 分页事件
     handleSizeChange(val) {
       this.pagesize = val
       this.loadData()
     },
     handleCurrentChange(val) {
       this.pagenum = val
+      this.loadData()
+    },
+    handleSearch() {
       this.loadData()
     },
     async loadData () {
@@ -109,7 +114,7 @@ export default {
       const token = sessionStorage.getItem('token')
       // 在请求头中设置token
       this.$http.defaults.headers.common['Authorization'] = token
-      const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
+      const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchVal}`)
       // 异步请求结束
       this.loading = false
       const data = res.data
