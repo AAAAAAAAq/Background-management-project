@@ -68,10 +68,6 @@ export default {
     async loadData () {
       // 发送异步请求之前
       this.loadding = true
-      // 发送请求前获取token
-      const token = sessionStorage.getItem('token')
-      // 在请求头中设置token
-      this.$http.defaults.headers.common['Authorization'] = token
       const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchVal}`)
       // 异步请求结束
       this.loading = false

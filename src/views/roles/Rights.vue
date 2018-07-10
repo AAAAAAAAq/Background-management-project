@@ -48,16 +48,12 @@ export default {
       list: []
     }
   },
-  created() {
+  created () {
     this.loadData()
   },
   methods: {
     // 读取数据,加载权限列表
-    async loadData() {
-      // 发送请求前获取token
-      const token = sessionStorage.getItem('token')
-      // 在请求头中设置token
-      this.$http.defaults.headers.common['Authorization'] = token
+    async loadData () {
       const res = await this.$http.get('rights/list')
       const data = res.data
       this.list = data.data
