@@ -9,6 +9,7 @@
     <!-- 表格 -->
     <el-table
       class="tb"
+      height="500"
       border
       stripe
       :data="list"
@@ -69,6 +70,7 @@ export default {
 <style>
   .box-card {
     height: 100%;
+    /* overflow: auto; */
   }
   .tb {
     margin-top: 10px;
