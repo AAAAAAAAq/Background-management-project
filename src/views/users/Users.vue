@@ -12,7 +12,27 @@
         <el-input v-model="searchVal" clearable placeholder="请输入内容" class="searchInput">
           <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
         </el-input>
-        <el-button type="success" plain>添加用户</el-button>
+        <el-button type="success" plain @click="AddFormVisible = true" >添加用户</el-button>
+        <el-dialog title="添加用户" :visible.sync="AddFormVisible">
+          <el-form v-model="AddFromData" label-width="100px">
+            <el-form-item label="姓名">
+              <el-input v-model="AddFromData.username" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="密码">
+              <el-input v-model="AddFromData.password" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱">
+              <el-input v-model="AddFromData.email" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="电话">
+              <el-input v-model="AddFromData.mobile" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="AddFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="handleAdd">确 定</el-button>
+          </div>
+        </el-dialog>
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -88,7 +108,14 @@ export default {
       pagenum: 1,
       pagesize: 5,
       total: 0,
-      searchVal: ''
+      searchVal: '',
+      AddFromData: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      AddFormVisible: false
     }
   },
   created () {
@@ -127,6 +154,7 @@ export default {
         this.$message.error(msg)
       }
     },
+    // 修改用户状态
     async handleSwitchChange (user) {
       const res = await this.$http.put(`users/${user.id}/state/${this.mg_state}`)
       const data = res.data
@@ -137,6 +165,7 @@ export default {
         this.$message.error(msg)
       }
     },
+    // 删除
     async handleDel (id) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -146,12 +175,12 @@ export default {
       }).then(async () => {
         const res = await this.$http.delete(`users/${id}`)
         const data = res.data
-        const {meta: {status, msg }} = data
+        const { meta: { status, msg } } = data
         this.loadData()
         if (status === 200) {
           this.$message({
             type: 'success',
-            message: '删除成功!'
+            message: msg
           })
         }
       }).catch(() => {
@@ -160,6 +189,19 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    // 添加用户
+    async handleAdd () {
+      this.AddFormVisible = false
+      const res = await this.$http.post('users',this.AddFromData)
+      const data = res.data
+      const {meta: { status, msg }} = data 
+      if(status === 201){
+        this.$message.success(msg)
+        this.loadData()
+      }else{
+        this.$message.error(msg)
+      }
     }
   }
 }
