@@ -1,0 +1,10 @@
+.box-card {
+  height: 100%;
+}
+.seachArea {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.seachArea .searchInput{
+  width: 350px;
+}
