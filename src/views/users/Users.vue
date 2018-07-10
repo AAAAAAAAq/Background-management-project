@@ -13,26 +13,6 @@
           <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
         </el-input>
         <el-button type="success" plain @click="AddFormVisible = true" >添加用户</el-button>
-        <el-dialog title="添加用户" :visible.sync="AddFormVisible">
-          <el-form v-model="AddFromData" label-width="100px" :rules="rules" ref="AddFromData">
-            <el-form-item label="姓名"  prop="username">
-              <el-input v-model="AddFromData.username" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="密码" prop="password">
-              <el-input v-model="AddFromData.password" auto-complete="off" type="password"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="AddFromData.email" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="电话" prop="mobile">
-              <el-input v-model="AddFromData.mobile" auto-complete="off"></el-input>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="AddFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="handleAdd">确 定</el-button>
-          </div>
-        </el-dialog>
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -80,12 +60,51 @@
         prop=""
         label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" size="mini" plain></el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" plain @click="handleSerPer(scope.row)"></el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" plain @click="handleDel(scope.row.id)"></el-button>
           <el-button type="success" icon="el-icon-check" size="mini" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 添加用户的弹出框 -->
+    <el-dialog title="添加用户" :visible.sync="AddFormVisible"  @closed="handleClear">
+      <el-form v-model="AddFromData" label-width="100px" :rules="rules" ref="AddFromData">
+        <el-form-item label="姓名"  prop="username">
+          <el-input v-model="AddFromData.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="AddFromData.password" auto-complete="off" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="AddFromData.email" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" prop="mobile">
+          <el-input v-model="AddFromData.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="AddFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAdd">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 编辑用户的弹出框 -->
+    <el-dialog title="修改用户" :visible.sync="EditFormVisible"  @closed="handleClear">
+      <el-form v-model="AddFromData" label-width="100px" :rules="rules" ref="AddFromData">
+        <el-form-item label="姓名" readonly>
+          <el-input v-model="AddFromData.username" auto-complete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="AddFromData.email" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" prop="mobile">
+          <el-input v-model="AddFromData.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="EditFormVisible = false" >取 消</el-button>
+        <el-button type="primary" @click="handleEdit">确 定</el-button>
+      </div>
+    </el-dialog>
       <!-- 分页 -->
   <el-pagination
     @size-change="handleSizeChange"
@@ -115,24 +134,26 @@ export default {
         email: '',
         mobile: ''
       },
+      editID: -1,
       AddFormVisible: false,
+      EditFormVisible: false,
       rules: {
-         username: [
-            { required: true, message: '请输入姓名', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-          ],
-          password: [
-            { required: true, message: '请输入密码', trigger: 'blur' },
-            { min: 6, max: 12, message: '长度不小于6个字符', trigger: 'blur' }
-          ],
-          email: [
-            { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
-          ],
-          mobile: [
-            { type: 'number', message: '请输入正确的电话',trigger: 'blur'},
-            { min: 8, max: 11, message: '请输入正确的电话', trigger: 'blur' }
-          ]
-        }
+        username: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 12, message: '长度不小于6个字符', trigger: 'blur' }
+        ],
+        email: [
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
+        mobile: [
+          { type: 'number', message: '请输入正确的电话', trigger: 'blur' },
+          { min: 8, max: 11, message: '请输入正确的电话', trigger: 'blur' }
+        ]
+      }
     }
   },
   created () {
@@ -210,34 +231,59 @@ export default {
     // 添加用户
     async handleAdd () {
       this.AddFormVisible = false
-      const res = await this.$http.post('users',this.AddFromData)
+      const res = await this.$http.post('users', this.AddFromData)
       const data = res.data
-      const {meta: { status, msg }} = data 
-      if(status === 201){
+      const {meta: { status, msg }} = data
+      if (status === 201) {
         this.$message.success(msg)
         this.loadData()
-        for (const key in this.AddFromData) {
-          this.AddFromData[key] = ''
-        }
-      }else{
+        handleClear()
+      } else {
         this.$message.error(msg)
       }
     },
     // 表单验证
-    submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    resetForm (formName) {
+      this.$refs[formName].resetFields()
+    },
+    // 获取编辑用户信息
+    async handleSerPer (user) {
+      this.EditFormVisible = true
+      this.editID = user.id
+      const res = await this.$http.get(`users/${this.editID}`)
+      this.AddFromData = res.data.data
+
+    },
+    // 编辑用户
+    async handleEdit(user){
+      const res = await this.$http.put(`users/${this.editID}`,this.AddFromData)
+      const data = res.data
+      const {meta:{ msg, status }} = data 
+      if( status === 200){
+        this.EditFormVisible = false
+        this.$message.success(msg)
+        this.loadData()
+      }else{
+        this.$message.error(msg)
       }
+    },
+    // 清除文本框
+    handleClear(){
+      for (const key in this.AddFromData) {
+          this.AddFromData[key] = ''
+        }
     }
+  }
 }
 </script>
 
