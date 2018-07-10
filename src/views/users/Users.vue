@@ -61,7 +61,7 @@
         label="操作">
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-edit" size="mini" plain></el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini" plain></el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" plain @click="handleDel(scope.row.id)"></el-button>
           <el-button type="success" icon="el-icon-check" size="mini" plain></el-button>
         </template>
       </el-table-column>
@@ -96,15 +96,15 @@ export default {
   },
   methods: {
     // 分页事件
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pagesize = val
       this.loadData()
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.pagenum = val
       this.loadData()
     },
-    handleSearch() {
+    handleSearch () {
       this.loadData()
     },
     async loadData () {
@@ -127,17 +127,39 @@ export default {
         this.$message.error(msg)
       }
     },
-    async handleSwitchChange(user) {
-      console.log(1);
-      
+    async handleSwitchChange (user) {
       const res = await this.$http.put(`users/${user.id}/state/${this.mg_state}`)
       const data = res.data
       const {meta: { msg, status }} = data
-      if(status === 200){
+      if (status === 200) {
         this.$message.success(msg)
-      }else{
+      } else {
         this.$message.error(msg)
       }
+    },
+    async handleDel (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(async () => {
+        const res = await this.$http.delete(`users/${id}`)
+        const data = res.data
+        const {meta: {status, msg }} = data
+        this.loadData()
+        if (status === 200) {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
