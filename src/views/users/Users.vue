@@ -49,6 +49,7 @@
         label="用户状态">
       <template slot-scope="scope">
         <el-switch
+          @change="handleSwitchChange(scope.row)"
           v-model="scope.row.mg_state"
           active-color="#13ce66"
           inactive-color="#ff4949">
@@ -66,12 +67,11 @@
       </el-table-column>
     </el-table>
       <!-- 分页 -->
-
   <el-pagination
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
     :current-page="pagenum"
-    :page-sizes="[2, 4, 6, 8]"
+    :page-sizes="[5,10,15,20]"
     :page-size="pagesize"
     layout="total, sizes, prev, pager, next, jumper"
     :total="total">
@@ -86,7 +86,7 @@ export default {
       list: [],
       loading: true,
       pagenum: 1,
-      pagesize: 2,
+      pagesize: 5,
       total: 0,
       searchVal: ''
     }
@@ -124,6 +124,18 @@ export default {
         this.list = users
         this.total = total
       } else {
+        this.$message.error(msg)
+      }
+    },
+    async handleSwitchChange(user) {
+      console.log(1);
+      
+      const res = await this.$http.put(`users/${user.id}/state/${this.mg_state}`)
+      const data = res.data
+      const {meta: { msg, status }} = data
+      if(status === 200){
+        this.$message.success(msg)
+      }else{
         this.$message.error(msg)
       }
     }
