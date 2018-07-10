@@ -14,17 +14,17 @@
         </el-input>
         <el-button type="success" plain @click="AddFormVisible = true" >添加用户</el-button>
         <el-dialog title="添加用户" :visible.sync="AddFormVisible">
-          <el-form v-model="AddFromData" label-width="100px">
-            <el-form-item label="姓名">
+          <el-form v-model="AddFromData" label-width="100px" :rules="rules" ref="AddFromData">
+            <el-form-item label="姓名"  prop="username">
               <el-input v-model="AddFromData.username" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="密码">
-              <el-input v-model="AddFromData.password" auto-complete="off"></el-input>
+            <el-form-item label="密码" prop="password">
+              <el-input v-model="AddFromData.password" auto-complete="off" type="password"></el-input>
             </el-form-item>
-            <el-form-item label="邮箱">
+            <el-form-item label="邮箱" prop="email">
               <el-input v-model="AddFromData.email" auto-complete="off"></el-input>
             </el-form-item>
-            <el-form-item label="电话">
+            <el-form-item label="电话" prop="mobile">
               <el-input v-model="AddFromData.mobile" auto-complete="off"></el-input>
             </el-form-item>
           </el-form>
@@ -115,7 +115,24 @@ export default {
         email: '',
         mobile: ''
       },
-      AddFormVisible: false
+      AddFormVisible: false,
+      rules: {
+         username: [
+            { required: true, message: '请输入姓名', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          ],
+          password: [
+            { required: true, message: '请输入密码', trigger: 'blur' },
+            { min: 6, max: 12, message: '长度不小于6个字符', trigger: 'blur' }
+          ],
+          email: [
+            { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+          ],
+          mobile: [
+            { type: 'number', message: '请输入正确的电话',trigger: 'blur'},
+            { min: 8, max: 11, message: '请输入正确的电话', trigger: 'blur' }
+          ]
+        }
     }
   },
   created () {
@@ -199,11 +216,28 @@ export default {
       if(status === 201){
         this.$message.success(msg)
         this.loadData()
+        for (const key in this.AddFromData) {
+          this.AddFromData[key] = ''
+        }
       }else{
         this.$message.error(msg)
       }
+    },
+    // 表单验证
+    submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            alert('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      }
     }
-  }
 }
 </script>
 
