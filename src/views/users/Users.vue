@@ -65,6 +65,17 @@
         </template>
       </el-table-column>
     </el-table>
+      <!-- 分页 -->
+
+  <el-pagination
+    @size-change="handleSizeChange"
+    @current-change="handleCurrentChange"
+    :current-page="pagenum"
+    :page-sizes="[2, 4, 6, 8]"
+    :page-size="pagesize"
+    layout="total, sizes, prev, pager, next, jumper"
+    :total="total">
+    </el-pagination>
   </el-card>
 </template>
 
@@ -73,13 +84,24 @@ export default {
   data () {
     return {
       list: [],
-      loading: true
+      loading: true,
+      pagenum: 1,
+      pagesize: 2,
+      total: 0
     }
   },
   created () {
     this.loadData()
   },
   methods: {
+    handleSizeChange(val) {
+      this.pagesize = val
+      this.loadData()
+    },
+    handleCurrentChange(val) {
+      this.pagenum = val
+      this.loadData()
+    },
     async loadData () {
       // 发送异步请求之前
       this.loadding = true
@@ -87,14 +109,15 @@ export default {
       const token = sessionStorage.getItem('token')
       // 在请求头中设置token
       this.$http.defaults.headers.common['Authorization'] = token
-      const res = await this.$http.get('users?pagenum=1&pagesize=10')
+      const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
       // 异步请求结束
       this.loading = false
       const data = res.data
       const {meta: { msg, status }} = data
       if (status === 200) {
-        const {data: {users}} = data
+        const {data: {users, total}} = data
         this.list = users
+        this.total = total
       } else {
         this.$message.error(msg)
       }
