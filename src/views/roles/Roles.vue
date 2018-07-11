@@ -7,6 +7,7 @@
         <el-button>添加角色</el-button>
       </el-col>
     </el-row>
+    <!-- 表格 -->
     <el-table
       class="tb"
       height="500"
@@ -14,13 +15,54 @@
       stripe
       :data="list"
       style="width: 100%">
-      <el-table-column
-        type="expand"
-        width="50">
-        <template>
-  
+      <!-- 展开列 -->
+      <el-table-column type="expand">
+        <template slot-scope="scope">
+          <!-- 当前角色中的权限列表 -->
+          <!-- scope.row 角色对象 ---- roleName, roleDesc, children -->
+          <!-- 一级权限 item1 -->
+          <el-row
+            class="level1"
+            v-for="item1 in scope.row.children"
+            :key="item1.id">
+            <el-col :span="4">
+              <!-- 显示一级权限 -->
+              <el-tag @close="hanldeClose(scope.row, item1.id)" closable>{{ item1.authName }}</el-tag>
+              <i class="el-icon-arrow-right"></i>
+            </el-col>
+            <!-- 二级和三级权限 -->
+            <el-col :span="20">
+              <!-- 二级权限 -->
+              <el-row
+                v-for="item2 in item1.children"
+                :key="item2.id">
+                <el-col :span="4">
+                  <!-- 显示二级权限 -->
+                  <el-tag @close="hanldeClose(scope.row, item2.id)"  closable type="success">{{ item2.authName }}</el-tag>
+                  <i class="el-icon-arrow-right"></i>
+                </el-col>
+                <el-col :span="20">
+                  <!-- 三级权限 -->
+                  <el-tag
+                    @close="hanldeClose(scope.row, item3.id)" 
+                    class="level3"
+                    closable
+                    type="warning"
+                    v-for="item3 in item2.children"
+                    :key="item3.id">
+                    {{ item3.authName }}
+                  </el-tag>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+          <!-- 没有权限的时候显示 -->
+          <el-row v-if="scope.row.children.length === 0">
+            <el-col :span="24">未分配权限</el-col>
+          </el-row>
         </template>
       </el-table-column>
+
       <el-table-column
         type="index"
         width="50">
@@ -44,6 +86,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分配权限的对话框 -->
   </el-card>
 </template>
 
@@ -51,7 +94,8 @@
 export default {
   data () {
     return {
-      list: []
+      list: [],
+      loading: true,
     }
   },
   created() {
@@ -79,4 +123,15 @@ export default {
     margin-top: 10px;
     margin-bottom: 10px;
   }
+  .row-add {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.level3 {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+.level1 {
+  margin-bottom: 10px;
+}
 </style>
