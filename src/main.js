@@ -8,8 +8,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/style.css'
 import MyAxios from './plugin/MyAxios'
 import moment from '../node_modules/moment'
+import MyBreadcrumb from './components/MyBreadcrumb.vue'
 
 Vue.config.productionTip = false
+Vue.component(MyBreadcrumb.name, MyBreadcrumb)
 
 Vue.filter('fmtDate', (value, fmstr) => {
   return moment(value).format(fmstr)
