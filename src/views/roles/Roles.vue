@@ -91,7 +91,7 @@
       @open="hanldeOpenDialog"
       title="分配权限"
       :visible.sync="dialogVisible">
-      <!-- 树形结构 
+      <!-- 树形结构
       data:提供树形数据
       props：设置数据中显示的属性
       分别通过default-expanded-keys和default-checked-keys设置默认展开和默认选中的节点。
@@ -201,8 +201,8 @@ export default {
       const halfCheckedKeys = this.$refs.tree.getHalfCheckedKeys()
       const newArray = [...checkedKeys, ...halfCheckedKeys]
       const { data: resData} = await this.$http.post(`roles/${this.currentRoleId}/rights`,
-      {rids: newArray.join(',') })
-      const { meta:{ status, msg } } =  resData
+        {rids: newArray.join(',') })
+      const { meta: { status, msg } } = resData
       if (status === 200) {
         // 关闭对话框
         this.dialogVisible = false
@@ -210,14 +210,14 @@ export default {
         this.$message.success(msg)
         // 重新加载数据
         this.loadData()
-      }else{
+      } else {
         this.$message.error(msg)
       }
     }
   }
 }
 </script>
- 
+
 <style>
   .btn {
     margin-top: 10px;
