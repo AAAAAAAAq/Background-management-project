@@ -82,11 +82,20 @@
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-edit" size="mini" plain ></el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" plain ></el-button>
-          <el-button type="success" icon="el-icon-check" size="mini" plain ></el-button>
+          <el-button type="success" icon="el-icon-check" size="mini" plain @click="dialogVisible=true"></el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分配权限的对话框 -->
+    <el-dialog
+      title="分配权限"
+      :visible.sync="dialogVisible">
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -95,7 +104,9 @@ export default {
   data () {
     return {
       list: [],
-      loading: true
+      loading: true,
+      // 控制显示分配权限的对话框
+      dialogVisible: false
     }
   },
   created () {
@@ -123,9 +134,9 @@ export default {
       const { data, meta: { status, msg } } = resData
       if (status === 200) {
         this.$message.success(msg)
-        // 重新绑定当前角色children 权限 
+        // 重新绑定当前角色children 权限
         role.children = data
-      }else{
+      } else {
         this.$message.error(msg)
       }
     }
