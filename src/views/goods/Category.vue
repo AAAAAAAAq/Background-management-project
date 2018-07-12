@@ -14,14 +14,15 @@
       stripe
       :data="list"
       style="width: 100%">
-      <el-table-column
-        type="index"
-        width="50">
-      </el-table-column>
-      <el-table-column
-        prop="cat_name"
-        label="分类名称">
-      </el-table-column>
+      <el-tree-grid
+          prop="cat_name"
+          label="分类名称"
+          treeKey="cat_id"
+          parentKey="cat_pid"
+          levelKey="cat_level"
+          childKey="children"
+          :indentSize="30">
+      </el-tree-grid>
       <el-table-column
         prop="cat_level"
         label="级别">
@@ -62,6 +63,11 @@
 </template>
 
 <script>
+// 1.npm i element-tree-grid
+// 2.引入组件
+import ElTreeGrid from 'element-tree-grid'
+// 3.注册局部组件
+
 export default {
   data () {
     return {
@@ -97,6 +103,9 @@ export default {
       this.pagenum = val
       this.loadData()
     },
+  },
+  components: {
+    ElTreeGrid
   }
 }
 </script>
