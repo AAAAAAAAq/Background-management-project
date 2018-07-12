@@ -47,6 +47,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <el-pagination
+      v-loading="loading"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[5,10,15,20]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </el-card>
 </template>
 
@@ -54,18 +65,38 @@
 export default {
   data () {
     return {
-      list: []
+      list: [],
+      loading: true,
+      // 分页数据 
+      pagenum: 1,
+      pagesize: 5,
+      total: 0,
+      searchVal: '',
     }
   },
   created () {
     this.loadData()
   },
   methods: {
+    // 读取列表数据
     async loadData () {
-      const { data: resData } = await this.$http.get('categories?type=3')
-      const { data } = resData
-      this.list = data
-    }
+      this.loading = true
+      const { data: resData } = await this.$http.get(`categories?type=3&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
+      this.loading = false
+      const { data : { result ,total } } = resData
+      this.list = result
+      // 获取总条数
+      this.total = total
+    },
+    // 分页事件
+    handleSizeChange (val) {
+      this.pagesize = val
+      this.loadData()
+    },
+    handleCurrentChange (val) {
+      this.pagenum = val
+      this.loadData()
+    },
   }
 }
 </script>
