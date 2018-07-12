@@ -88,9 +88,18 @@
     </el-table>
     <!-- 分配权限的对话框 -->
     <el-dialog
+      @open="hanldeOpenDialog"
       title="分配权限"
       :visible.sync="dialogVisible">
-      <span>这是一段信息</span>
+      <!-- 树形结构 
+      data:提供树形数据
+      props：设置数据中显示的属性-->
+      <el-tree
+        :data="treeData"
+        :props="defaultProps"
+        show-checkbox
+        default-expand-all>
+      </el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -106,7 +115,14 @@ export default {
       list: [],
       loading: true,
       // 控制显示分配权限的对话框
-      dialogVisible: false
+      dialogVisible: false,
+      // 绑定树形结构数据
+      treeData: [],
+      // 配置要展示数据的哪个属性
+      defaultProps: {
+        children: 'children',
+        label: 'authName'
+      }
     }
   },
   created () {
@@ -139,6 +155,12 @@ export default {
       } else {
         this.$message.error(msg)
       }
+    },
+    // 打开对话框时执行
+    async hanldeOpenDialog () {
+      const { data: resData } = await this.$http.get('rights/tree')
+      const { data } = resData
+      this.treeData = data
     }
   }
 }
