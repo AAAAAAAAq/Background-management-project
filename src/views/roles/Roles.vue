@@ -19,7 +19,7 @@
       <el-table-column type="expand">
         <template slot-scope="scope">
           <!-- 当前角色中的权限列表 -->
-          <!-- scope.row 角色对象 ---- roleName, roleDesc, children -->
+          <!-- scope.row 角色对象 roleName, roleDesc, children -->
           <!-- 一级权限 item1 -->
           <el-row
             class="level1"
@@ -27,7 +27,7 @@
             :key="item1.id">
             <el-col :span="4">
               <!-- 显示一级权限 -->
-              <el-tag @close="hanldeClose(scope.row, item1.id)" closable>{{ item1.authName }}</el-tag>
+              <el-tag @close="hanldeClose(scope.row.id, item1.id)" closable>{{ item1.authName }}</el-tag>
               <i class="el-icon-arrow-right"></i>
             </el-col>
             <!-- 二级和三级权限 -->
@@ -38,13 +38,13 @@
                 :key="item2.id">
                 <el-col :span="4">
                   <!-- 显示二级权限 -->
-                  <el-tag @close="hanldeClose(scope.row, item2.id)"  closable type="success">{{ item2.authName }}</el-tag>
+                  <el-tag @close="hanldeClose(scope.row.id, item2.id)"  closable type="success">{{ item2.authName }}</el-tag>
                   <i class="el-icon-arrow-right"></i>
                 </el-col>
                 <el-col :span="20">
                   <!-- 三级权限 -->
                   <el-tag
-                    @close="hanldeClose(scope.row, item3.id)" 
+                    @close="hanldeClose(scope.row.id, item3.id)"
                     class="level3"
                     closable
                     type="warning"
@@ -95,21 +95,35 @@ export default {
   data () {
     return {
       list: [],
-      loading: true,
+      loading: true
     }
   },
-  created() {
+  created () {
     this.loadData()
   },
   methods: {
     // 加载角色列表
-    async loadData(){
-      // resData是服务器返回的数据 
+    async loadData () {
+      this.loading = true
+      // resData是服务器返回的数据
       const { data: resData } = await this.$http.get('roles')
       // 解析 data status msg
-      const { data, meta: { status, msg }} = resData
+      const { data, meta: { status, msg } } = resData
       if (status === 200) {
         this.list = data
+      } else {
+        this.$message.error(msg)
+      }
+    },
+    // 标签关闭事件
+    async hanldeClose (roleId, rightId) {
+      // roleId:角色id
+      // rightId:权限id
+      const {data: resData} = await this.$http.delete(`roles/${roleId}}/rights/${rightId}`)
+      const { meta: { status, msg } } = resData
+      if (status === 200) {
+        this.$message.success(msg)
+        this.loadData()
       }else{
         this.$message.error(msg)
       }
