@@ -56,14 +56,14 @@ export default {
       menus: []
     }
   },
-  // 判断是否登录
-  beforeCreate () {
-    const token = sessionStorage.getItem('token')
-    if (!token) {
-      this.$router.push({ name: 'login' })
-      this.$message.warning('请先登录')
-    }
-  },
+  // // 判断是否登录
+  // beforeCreate () {
+  //   const token = sessionStorage.getItem('token')
+  //   if (!token) {
+  //     this.$router.push({ name: 'login' })
+  //     this.$message.warning('请先登录')
+  //   }
+  // },
   created () {
     // 加载当前角色的权限列表
     this.loadData()
@@ -74,7 +74,7 @@ export default {
       const { data, meta: { msg, status }} = resData
       if (status === 200) {
         this.menus = data
-      }else{
+      } else {
         this.$message.error(msg)
       }
     },
