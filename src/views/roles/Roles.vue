@@ -82,7 +82,7 @@
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-edit" size="mini" plain ></el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" plain ></el-button>
-          <el-button type="success" icon="el-icon-check" size="mini" plain @click="dialogVisible=true"></el-button>
+          <el-button type="success" icon="el-icon-check" size="mini" plain @click="handleShowRightDialog(scope.row)"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -93,10 +93,14 @@
       :visible.sync="dialogVisible">
       <!-- 树形结构 
       data:提供树形数据
-      props：设置数据中显示的属性-->
+      props：设置数据中显示的属性
+      分别通过default-expanded-keys和default-checked-keys设置默认展开和默认选中的节点。
+      需要注意的是，此时必须设置node-key，其值为节点数据中的一个字段名，该字段在整棵树中是唯一的。-->
       <el-tree
         :data="treeData"
         :props="defaultProps"
+        :default-checked-keys= "checkList"
+        node-key= "id"
         show-checkbox
         default-expand-all>
       </el-tree>
@@ -122,7 +126,9 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'authName'
-      }
+      },
+      // 获取选择节点的id
+      checkList: []
     }
   },
   created () {
@@ -161,6 +167,25 @@ export default {
       const { data: resData } = await this.$http.get('rights/tree')
       const { data } = resData
       this.treeData = data
+    },
+    // 点击按钮显示分配权限的对话框
+    handleShowRightDialog (role) {
+      this.dialogVisible = true
+      // 获取当前角色所拥有的权限id
+      // 遍历一级权限
+      const arr = []
+      role.children.forEach((item1) => {
+        arr.push(item1.id)
+        // 遍历二级权限
+        item1.children.forEach((item2) => {
+          arr.push(item2.id)
+          // 遍历三级权限
+          item2.children.forEach((item3) => {
+            arr.push(item3.id)
+          })
+        })
+      })
+      this.checkList = arr
     }
   }
 }
