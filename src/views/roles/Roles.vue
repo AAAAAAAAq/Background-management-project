@@ -97,6 +97,7 @@
       分别通过default-expanded-keys和default-checked-keys设置默认展开和默认选中的节点。
       需要注意的是，此时必须设置node-key，其值为节点数据中的一个字段名，该字段在整棵树中是唯一的。-->
       <el-tree
+        ref= "tree"
         :data="treeData"
         :props="defaultProps"
         :default-checked-keys= "checkList"
@@ -106,7 +107,7 @@
       </el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="handleSetRights">确 定</el-button>
       </span>
     </el-dialog>
   </el-card>
@@ -128,7 +129,9 @@ export default {
         label: 'authName'
       },
       // 获取选择节点的id
-      checkList: []
+      checkList: [],
+      // 记录当前修改的角色id
+      currentRoleId: -1
     }
   },
   created () {
@@ -170,6 +173,8 @@ export default {
     },
     // 点击按钮显示分配权限的对话框
     handleShowRightDialog (role) {
+      // 记录角色的id，分配权限时使用
+      this.currentRoleId = role.id
       this.dialogVisible = true
       // 获取当前角色所拥有的权限id
       // 遍历一级权限
@@ -186,11 +191,33 @@ export default {
         })
       })
       this.checkList = arr
+    },
+    // 点击确定按钮,分配权限
+    async handleSetRights () {
+      this.dialogVisible = false
+      // 获取到全选中节点的id getCheckedKeys
+      const checkedKeys = this.$refs.tree.getCheckedKeys()
+      // 获取到半选中节点的id getHalfCheckedKeys
+      const halfCheckedKeys = this.$refs.tree.getHalfCheckedKeys()
+      const newArray = [...checkedKeys, ...halfCheckedKeys]
+      const { data: resData} = await this.$http.post(`roles/${this.currentRoleId}/rights`,
+      {rids: newArray.join(',') })
+      const { meta:{ status, msg } } =  resData
+      if (status === 200) {
+        // 关闭对话框
+        this.dialogVisible = false
+        // 提示信息
+        this.$message.success(msg)
+        // 重新加载数据
+        this.loadData()
+      }else{
+        this.$message.error(msg)
+      }
     }
   }
 }
 </script>
-
+ 
 <style>
   .btn {
     margin-top: 10px;
